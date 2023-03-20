@@ -84,10 +84,18 @@ module JabberAdmin
   # @param method [Symbol, String, #to_s] the name of the command to run
   # @param args all additional payload to pass down to the API call
   # @return [RestClient::Response] the actual response of the command
-  def self.method_missing(method, *args)
-    predefined_command(method).call(predefined_callable(method), *args)
-  rescue NameError
-    predefined_callable(method).call(method.to_s.chomp('!'), *args)
+  if RUBY_VERSION < "3"
+    def self.method_missing(method, *args)
+      predefined_command(method).call(predefined_callable(method), *args)
+    rescue NameError
+      predefined_callable(method).call(method.to_s.chomp('!'), *args)
+    end
+  else
+    def self.method_missing(method, *args, **kwargs)
+      predefined_command(method).call(predefined_callable(method), **kwargs)
+    rescue NameError
+      predefined_callable(method).call(method.to_s.chomp('!'), **kwargs)
+    end
   end
 
   # Try to find the given name as a predefined command. When there is no such
@@ -107,9 +115,17 @@ module JabberAdmin
   #
   # @param name [Symbol, String, #to_s] the command name to match
   # @return [Proc] the API call wrapper
-  def self.predefined_callable(name)
-    method = name.to_s.end_with?('!') ? 'perform!' : 'perform'
-    proc { |*args| ApiCall.send(method, *args) }
+
+  if RUBY_VERSION < "3"
+    def self.predefined_callable(name)
+      method = name.to_s.end_with?('!') ? 'perform!' : 'perform'
+      proc { |*args| ApiCall.send(method, *args) }
+    end
+  else
+    def self.predefined_callable(name)
+      method = name.to_s.end_with?('!') ? 'perform!' : 'perform'
+      proc { |*args, **kwargs| ApiCall.send(method, *args, **kwargs) }
+    end
   end
 
   # Determine if a room exists. This is a convenience method for the

@@ -111,8 +111,14 @@ module JabberAdmin
     # @param command [String] the command to execute
     # @param payload [Hash] the request payload, empty by default
     # @return [RestClient::Response] the API call response
-    def self.perform(*args)
-      new(*args).perform
+    if RUBY_VERSION < "3"
+      def self.perform(*args)
+        new(*args).perform
+      end
+    else
+      def self.perform(*args, **kwargs)
+        new(*args, **kwargs).perform
+      end
     end
 
     # A simple class level shortcut of the +perform!+ method. This is just DSL
@@ -125,8 +131,14 @@ module JabberAdmin
     #
     # @raise JabberAdmin::ApiError
     # @raise JabberAdmin::CommandError
-    def self.perform!(*args)
-      new(*args).perform!
+    if RUBY_VERSION < "3"
+      def self.perform!(*args)
+        new(*args).perform!
+      end
+    else
+      def self.perform!(*args, **kwargs)
+        new(*args, **kwargs).perform!
+      end
     end
   end
 end
