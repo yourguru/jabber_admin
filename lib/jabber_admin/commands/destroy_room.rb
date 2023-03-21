@@ -10,10 +10,9 @@ module JabberAdmin
       #
       # @param callable [Proc, #call] the callable to call
       # @param room [String] room JID (eg. +room1@conference.localhost+)
-      # @param host [String] the jabber host (eg. +localhost+)
-      def self.call(callable, room:, host:)
+      def self.call(callable, room:)
         name, service = room.split('@')
-        callable.call('destroy_room', name: name, service: service, host: host)
+        callable.call('destroy_room', name: name, service: service)
       end
     end
   end

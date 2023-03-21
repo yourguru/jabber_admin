@@ -6,12 +6,10 @@ RSpec.describe JabberAdmin::Commands::DestroyRoom do
   it_behaves_like 'a command',
                   with_name: 'destroy_room',
                   with_input_args: [
-                    room: 'room1@conference.ejabberd.local',
-                    host: 'ejabberd.local'
+                    room: 'room1@conference.ejabberd.local'
                   ],
                   with_called_args: [
                     name: 'room1',
-                    service: 'conference.ejabberd.local',
-                    host: 'ejabberd.local'
+                    service: 'conference.ejabberd.local'
                   ]
 end
