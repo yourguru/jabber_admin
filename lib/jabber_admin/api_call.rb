@@ -111,9 +111,10 @@ module JabberAdmin
     # @param command [String] the command to execute
     # @param payload [Hash] the request payload, empty by default
     # @return [RestClient::Response] the API call response
-    def self.perform(*args)
-      new(*args).perform
+    def self.perform(*args, **kwargs)
+      new(*args, **kwargs).perform
     end
+
 
     # A simple class level shortcut of the +perform!+ method. This is just DSL
     # code which accepts the same arguments as the instance initialize method.
@@ -125,8 +126,8 @@ module JabberAdmin
     #
     # @raise JabberAdmin::ApiError
     # @raise JabberAdmin::CommandError
-    def self.perform!(*args)
-      new(*args).perform!
+    def self.perform!(*args, **kwargs)
+      new(*args, **kwargs).perform!
     end
   end
 end

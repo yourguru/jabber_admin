@@ -13,7 +13,18 @@ shared_examples 'a command' do |with_name:, with_called_name: nil,
   let(:action) do
     proc do |actual_callable|
       actual_callable ||= callable
-      described_class.call(actual_callable, *with_input_args)
+
+      args, kwargs = with_input_args
+
+      if kwargs.nil?
+        if args.nil?
+          described_class.call(actual_callable)
+        else
+          described_class.call(actual_callable, **args)
+        end
+      else
+        described_class.call(actual_callable, *args, **kwargs)
+      end
     end
   end
 
@@ -59,8 +70,23 @@ shared_examples 'a command' do |with_name:, with_called_name: nil,
 
   describe 'integration test', vcr: true do
     it 'raises no errors' do
-      expect { JabberAdmin.send("#{with_name}!", *with_input_args) }.not_to \
-        raise_error
+      args, kwargs = with_input_args
+
+      puts 'args: ' + args.inspect
+      puts 'kwargs: ' + kwargs.inspect
+
+      if kwargs.nil?
+        if args.present?
+          expect { JabberAdmin.send("#{with_name}!", **args) }.not_to \
+            raise_error
+        else
+          expect { JabberAdmin.send("#{with_name}!", *args) }.not_to \
+            raise_error
+        end
+      else
+        expect { JabberAdmin.send("#{with_name}!", *args, **kwargs) }.not_to \
+          raise_error
+      end
     end
   end
 end
